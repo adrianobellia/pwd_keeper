@@ -17,7 +17,7 @@ class EncryptionUtils {
 
   static Future<bool> doesFileExist() async {
     final directory = await getApplicationDocumentsDirectory();
-    final file = File('${directory.path}${filename}');
+    final file = File('${directory.path}/${filename}');
     if (await file.exists()) {
       return true;
     }
