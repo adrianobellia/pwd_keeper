@@ -30,7 +30,7 @@ Make your version unique by customizing key parameters in the `encryption.dart` 
 
 static final iv = encrypt.IV.fromUtf8("IVIVIVIV");  // <-- Customize the Initialization Vector with an 8-character string
 
-**Filename (IV):**
+**Filename:**
 
 static const filename ='data.calc';                 // <-- Customize the dataSave filename
 
