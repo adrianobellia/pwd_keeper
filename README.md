@@ -40,6 +40,18 @@ static const salt = 'SALT';                         // <-- Customize the salt
 
 Feel free to hide your password manager in the app of your choice based on this project. Only by doing so can we be true custodians of our keys.
 
+## Tutorial: Setting Up Password Keeper
+
+1. **Customize the Initialization Vector, Data Save Filename, and Salt in the `encryption.dart` file.**
+
+2. **Compile the app and install it on your device.**
+
+3. **Open the app and set up a master password.**
+
+4. **Use the expression string from the calculator as your password and press '=' to confirm and access the password manager.**
+
+   This simple tutorial helps you personalize and secure your Password Keeper instance. Remember, your expression in the calculator is the key to unlocking your password manager.
+
 ## How to Contribute
 
 If you find this project helpful and would like to support my work, you can contribute by making a donation. Your contributions help in maintaining and improving this project, as well as in the creation of more projects like this.
