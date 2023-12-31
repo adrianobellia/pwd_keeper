@@ -39,7 +39,6 @@ static const filename ='data.calc';                 // <-- Customize the dataSav
 static const salt = 'SALT';                         // <-- Customize the salt
 
 Feel free to hide your password manager in the app of your choice based on this project. Only by doing so can we be true custodians of our keys.
-How to Contribute
 
 ## How to Contribute
 
