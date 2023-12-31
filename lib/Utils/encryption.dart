@@ -9,74 +9,67 @@ import '../Models/service_data.dart';
 import '../Screen/decrypted_data_screen.dart';
 
 class EncryptionUtils {
+  static final iv = encrypt.IV.fromUtf8("IVIVIVIV");  // <-- Customize the Initialization Vector with 8 chars string
+  static const filename ='data.calc';                 // <-- Customize the dataSave filename
+  static const salt = 'SALT';                         // <-- Customize the salt
+  static const startTag = '[Decrypted]\n';
+  static const endTag = '\n[Decrypted]';
+
+  static Future<bool> doesFileExist() async {
+    final directory = await getApplicationDocumentsDirectory();
+    final file = File('${directory.path}${filename}');
+    if (await file.exists()) {
+      return true;
+    }
+    return false;
+  }
+  static Future<String> readFileContent() async {
+    final directory = await getApplicationDocumentsDirectory();
+    final file = File('${directory.path}/${filename}');
+    if (await file.exists()) {
+      return await file.readAsString();
+    }
+    return '';
+  }
   static Future<void> writeFileContent(String content) async {
     final directory = await getApplicationDocumentsDirectory();
-    final file = File('${directory.path}/data.calc');
+    final file = File('${directory.path}/${filename}');
     await file.writeAsString(content);
   }
+  static String generateMd5(String input) {
+    return md5.convert(utf8.encode(salt+input)).toString();
+  }
   static String encryptData(String data, String password) {
-    final iv = encrypt.IV.fromUtf8("ANTANI12");
     final key = encrypt.Key.fromUtf8(generateMd5(password));
     final encrypter = encrypt.Encrypter(encrypt.Salsa20(key));
     final encryptedData = encrypter.encrypt(data, iv: iv);
     return encryptedData.base64;
   }
   static Future<void> updateEncryptedFile(String jsonString,String key) async {
-    final encryptedContent = encryptData('[Decrypted]\n$jsonString[Decrypted]',key);
+    final encryptedContent = encryptData(startTag + jsonString + endTag,key);
     await writeFileContent(encryptedContent);
-  }
-  static String generateMd5(String input) {
-    const salt = '@#[6-6-6]#@';
-    return md5.convert(utf8.encode(salt+input)).toString();
-  }
-  static String generateRandomPassword() {
-    final random = Random.secure();
-    const String uppercaseLetters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-    const String lowercaseLetters = 'abcdefghijklmnopqrstuvwxyz';
-    const String symbols = '!@#\$%^&*()-_=+[]{}|;:,.<>?';
-    const String numbers = '0123456789';
-    final oneUppercase = uppercaseLetters[random.nextInt(uppercaseLetters.length)];
-    final oneLowercase = lowercaseLetters[random.nextInt(lowercaseLetters.length)];
-    final oneSymbol = symbols[random.nextInt(symbols.length)];
-    final oneNumber = numbers[random.nextInt(numbers.length)];
-    const String allChars = uppercaseLetters + lowercaseLetters + symbols + numbers;
-    const int remainingChars = 12;
-    final randomChars = List.generate(remainingChars, (index) => allChars[random.nextInt(allChars.length)]);
-    final passwordChars = [oneUppercase, oneLowercase, oneSymbol, oneNumber, ...randomChars];
-    passwordChars.shuffle();
-    final password = passwordChars.join();
-    return password;
   }
   static Future<void> generateEncryptedFile(String password) async {
     final directory = await getApplicationDocumentsDirectory();
-    final file = File('${directory.path}/data.calc');
+    final file = File('${directory.path}/${filename}');
     final fileExists = await file.exists();
     if (!fileExists) {
-      const dataToEncrypt = '[Decrypted]\n[Decrypted]';
+      const dataToEncrypt = startTag+endTag;
       final encryptedContent = encryptData(dataToEncrypt, password);
       await file.writeAsString(encryptedContent);
     }
   }
-  static Future<String> readFileContent() async {
-    final directory = await getApplicationDocumentsDirectory();
-    final file = File('${directory.path}/data.calc');
-    if (await file.exists()) {
-      return await file.readAsString();
-    }
-    return '';
-  }
   static Future<void> decryptFile(String expression ,BuildContext context) async {
     final encryptedContent = await readFileContent();
     final password = generateMd5(expression);
-    final iv = encrypt.IV.fromUtf8("ANTANI12");
     final key = encrypt.Key.fromUtf8(password);
     final encrypter = encrypt.Encrypter(encrypt.Salsa20(key));
     String decryptedData = encrypter.decrypt64(encryptedContent, iv: iv);
-    final hasStartTag = decryptedData.startsWith('[Decrypted]\n');
-    final hasEndTag = decryptedData.endsWith('[Decrypted]');
+    final hasStartTag = decryptedData.startsWith(startTag);
+    final hasEndTag = decryptedData.endsWith(endTag);
     List<ServiceData> serviceDataList = [];
     if (hasStartTag && hasEndTag) {
-      decryptedData = decryptedData.replaceAll('[Decrypted]\n', '').replaceAll('[Decrypted]', '');
+      decryptedData = decryptedData.replaceAll(startTag, '').replaceAll(endTag, '');
 
       if (decryptedData != ''){
         final List<dynamic> decodedData = jsonDecode(decryptedData);
@@ -92,12 +85,22 @@ class EncryptionUtils {
       );
     }
   }
-  static Future<bool> doesFileExist() async {
-    final directory = await getApplicationDocumentsDirectory();
-    final file = File('${directory.path}/data.calc');
-    if (await file.exists()) {
-      return true;
-    }
-    return false;
+  static String generateRandomPassword() {
+    const uppercaseLetters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    const lowercaseLetters = 'abcdefghijklmnopqrstuvwxyz';
+    const symbols = '!@#\$%^&*()-_=+[]{}|;:,.<>?';
+    const numbers = '0123456789';
+    final random = Random.secure();
+    final oneUppercase = uppercaseLetters[random.nextInt(uppercaseLetters.length)];
+    final oneLowercase = lowercaseLetters[random.nextInt(lowercaseLetters.length)];
+    final oneSymbol = symbols[random.nextInt(symbols.length)];
+    final oneNumber = numbers[random.nextInt(numbers.length)];
+    const String allChars = uppercaseLetters + lowercaseLetters + symbols + numbers;
+    const int remainingChars = 12;
+    final randomChars = List.generate(remainingChars, (index) => allChars[random.nextInt(allChars.length)]);
+    final passwordChars = [oneUppercase, oneLowercase, oneSymbol, oneNumber, ...randomChars];
+    passwordChars.shuffle();
+    final password = passwordChars.join();
+    return password;
   }
 }
