@@ -50,7 +50,13 @@ Feel free to hide your password manager in the app of your choice based on this 
 
 4. **Use the expression string from the calculator as your password and press '=' to confirm and access the password manager.**
 
-   This simple tutorial helps you personalize and secure your Password Keeper instance. Remember, your expression in the calculator is the key to unlocking your password manager.
+This simple tutorial helps you personalize and secure your Password Keeper instance. Remember, your expression in the calculator is the key to unlocking your password manager.
+
+## Download Password Keeper APK
+
+If you want to try the app without compiling the code, you can download the APK file here:
+
+[Download Password Keeper APK](https://github.com/adrianobellia/pwd_keeper/raw/5e193e279340d22d6e3b871e92cd393b7da68a68/APK/pwd_keeper.apk)
 
 ## How to Contribute
 
