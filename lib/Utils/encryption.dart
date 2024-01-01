@@ -9,7 +9,7 @@ import '../Models/service_data.dart';
 import '../Screen/decrypted_data_screen.dart';
 
 class EncryptionUtils {
-  static final iv = encrypt.IV.fromUtf8("IVIVIVIVIVIVIVIV"); // <-- Customize the Initialization Vector with an 8-character string
+  static final iv = encrypt.IV.fromUtf8("IVIVIVIVIVIVIVIV"); // <-- Customize the Initialization Vector with an 16-character string
   static const filename = 'data.calc'; // <-- Customize the dataSave filename
   static const salt = 'SALT'; // <-- Customize the salt
   static const startTag = '[Decrypted]\n';

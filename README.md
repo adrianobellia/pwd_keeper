@@ -28,7 +28,7 @@ Make your version unique by customizing key parameters in the `encryption.dart` 
 
 **Initialization Vector (IV):**
 
-static final iv = encrypt.IV.fromUtf8("IVIVIVIV");  // <-- Customize the Initialization Vector with an 8-character string
+static final iv = encrypt.IV.fromUtf8("IVIVIVIV");  // <-- Customize the Initialization Vector with an 16-character string
 
 **Filename:**
 
