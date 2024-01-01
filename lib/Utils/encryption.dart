@@ -9,61 +9,61 @@ import '../Models/service_data.dart';
 import '../Screen/decrypted_data_screen.dart';
 
 class EncryptionUtils {
-  static final iv = encrypt.IV.fromUtf8("IVIVIVIV");  // <-- Customize the Initialization Vector with an 8-character string
-  static const filename ='data.calc';                 // <-- Customize the dataSave filename
-  static const salt = 'SALT';                         // <-- Customize the salt
+  static final iv = encrypt.IV.fromUtf8("AVAVAVAVAVAVAVAV"); // <-- Customize the Initialization Vector with an 8-character string
+  static const filename = 'data.calc'; // <-- Customize the dataSave filename
+  static const salt = 'SALT'; // <-- Customize the salt
   static const startTag = '[Decrypted]\n';
   static const endTag = '\n[Decrypted]';
 
   static Future<bool> doesFileExist() async {
     final directory = await getApplicationDocumentsDirectory();
     final file = File('${directory.path}/${filename}');
-    if (await file.exists()) {
-      return true;
-    }
-    return false;
+    return await file.exists();
   }
+
   static Future<String> readFileContent() async {
     final directory = await getApplicationDocumentsDirectory();
     final file = File('${directory.path}/${filename}');
-    if (await file.exists()) {
-      return await file.readAsString();
-    }
-    return '';
+    return await file.readAsString();
   }
+
   static Future<void> writeFileContent(String content) async {
     final directory = await getApplicationDocumentsDirectory();
     final file = File('${directory.path}/${filename}');
     await file.writeAsString(content);
   }
-  static String generateMd5(String input) {
-    return md5.convert(utf8.encode(salt+input)).toString();
+
+  static String generateSha256(String input) {
+    return sha256.convert(utf8.encode(salt + input)).toString();
   }
+
   static String encryptData(String data, String password) {
-    final key = encrypt.Key.fromUtf8(generateMd5(password));
-    final encrypter = encrypt.Encrypter(encrypt.Salsa20(key));
+    final key = encrypt.Key.fromBase16(generateSha256(password));
+    final encrypter = encrypt.Encrypter(encrypt.AES(key, mode: encrypt.AESMode.cbc));
     final encryptedData = encrypter.encrypt(data, iv: iv);
     return encryptedData.base64;
   }
-  static Future<void> updateEncryptedFile(String jsonString,String key) async {
-    final encryptedContent = encryptData(startTag + jsonString + endTag,key);
+
+  static Future<void> updateEncryptedFile(String jsonString, String key) async {
+    final encryptedContent = encryptData(startTag + jsonString + endTag, key);
     await writeFileContent(encryptedContent);
   }
+
   static Future<void> generateEncryptedFile(String password) async {
     final directory = await getApplicationDocumentsDirectory();
     final file = File('${directory.path}/${filename}');
     final fileExists = await file.exists();
     if (!fileExists) {
-      const dataToEncrypt = startTag+endTag;
+      const dataToEncrypt = startTag + endTag;
       final encryptedContent = encryptData(dataToEncrypt, password);
       await file.writeAsString(encryptedContent);
     }
   }
-  static Future<void> decryptFile(String expression ,BuildContext context) async {
+
+  static Future<void> decryptFile(String expression, BuildContext context) async {
     final encryptedContent = await readFileContent();
-    final password = generateMd5(expression);
-    final key = encrypt.Key.fromUtf8(password);
-    final encrypter = encrypt.Encrypter(encrypt.Salsa20(key));
+    final key = encrypt.Key.fromBase16(generateSha256(expression));
+    final encrypter = encrypt.Encrypter(encrypt.AES(key, mode: encrypt.AESMode.cbc));
     String decryptedData = encrypter.decrypt64(encryptedContent, iv: iv);
     final hasStartTag = decryptedData.startsWith(startTag);
     final hasEndTag = decryptedData.endsWith(endTag);
@@ -71,11 +71,9 @@ class EncryptionUtils {
     if (hasStartTag && hasEndTag) {
       decryptedData = decryptedData.replaceAll(startTag, '').replaceAll(endTag, '');
 
-      if (decryptedData != ''){
+      if (decryptedData != '') {
         final List<dynamic> decodedData = jsonDecode(decryptedData);
-        serviceDataList = decodedData
-            .map((json) => ServiceData.fromJson(json))
-            .toList();
+        serviceDataList = decodedData.map((json) => ServiceData.fromJson(json)).toList();
       }
       Navigator.pushReplacement(
         context,
@@ -85,6 +83,7 @@ class EncryptionUtils {
       );
     }
   }
+
   static String generateRandomPassword() {
     const uppercaseLetters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
     const lowercaseLetters = 'abcdefghijklmnopqrstuvwxyz';
