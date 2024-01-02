@@ -1,16 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:math_expressions/math_expressions.dart';
+import 'package:pwd_keeper/Models/service_data.dart';
 import '../Utils/encryption.dart';
+import 'decrypted_data_screen.dart';
 
-class CalculatorApp extends StatelessWidget {
-  const CalculatorApp({super.key});
-  @override
-  Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: CalculatorScreen(),
-    );
-  }
-}
 class CalculatorScreen extends StatefulWidget {
   const CalculatorScreen({super.key});
   @override
@@ -31,13 +24,21 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
       });
     }
   }
+  Future<void> _tryToDecrypt() async {
+    List<ServiceData>? s = await EncryptionUtils.decryptFile(_expression);
+    if (s!=null){
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (context) => DecryptedDataScreen(decryptedData: s, expression: _expression),
+        ),);
+    }
+  }
   Future<void> _handleEqualsPressed() async {
     try {
-      await EncryptionUtils.decryptFile(_expression, context);
-      _evaluateExpression();
-    } catch (e) {
-      _evaluateExpression();
-    }
+      _tryToDecrypt();
+    } catch (e) {}
+    _evaluateExpression();
   }
   void _evaluateExpression() {
     try{
