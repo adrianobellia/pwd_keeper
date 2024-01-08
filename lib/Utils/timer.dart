@@ -7,10 +7,7 @@ class Timer {
   final int _durationInSeconds;
   DateTime? _lastSystemTime;
 
-  Timer({required TickerProvider vsync, required int durationInSeconds})
-      :
-        _elapsedSeconds = 0,
-        _durationInSeconds = durationInSeconds {
+  Timer({required TickerProvider vsync, required int durationInSeconds}):_elapsedSeconds = 0,_durationInSeconds = durationInSeconds {
     _ticker = vsync.createTicker((elapsed) {
       DateTime currentSystemTime = DateTime.now();
       if (_lastSystemTime != null) {
@@ -20,14 +17,12 @@ class Timer {
         }
       }
       _lastSystemTime = currentSystemTime;
-
       _elapsedSeconds = elapsed.inSeconds;
       if (_elapsedSeconds >= _durationInSeconds) {
         stop();
       }
     });
   }
-
   void start() {
     if (!_started) {
       _ticker.start();
@@ -48,7 +43,6 @@ class Timer {
       _elapsedSeconds = 0;
     }
   }
-
   int get elapsedSeconds => _elapsedSeconds;
   bool get started => _started;
   void dispose() {

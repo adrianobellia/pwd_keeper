@@ -18,9 +18,11 @@ class _CalculatorScreenState extends State<CalculatorScreen> with TickerProvider
       _clearExpression();
     } else if (text == '=') {
       _handleEqualsPressed();
+    } else if (text == '<') {
+      _handleBackspace();
     } else {
       setState(() {
-        if( _result != null)_result = null;
+        _result2expression();
         _expression += text;
       });
     }
@@ -32,27 +34,28 @@ class _CalculatorScreenState extends State<CalculatorScreen> with TickerProvider
     t.start();
   }
   Future<void> _tryToDecrypt() async {
-    try{
-      List<ServiceData>? s = await EncryptionUtils.decryptFile(_expression);
-      if (s!=null){
-        t.dispose();
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (context) => DecryptedDataScreen(decryptedData: s, expression: _expression),
-          ),);
-      }
-    }
-    catch (e) {}
-  }
-  Future<void> _handleEqualsPressed() async {
     if (!t.started){
       t.start();
-      _tryToDecrypt();
+      try{
+        List<ServiceData>? s = await EncryptionUtils.decryptFile(_expression);
+        if (s!=null){
+          t.dispose();
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => DecryptedDataScreen(decryptedData: s, expression: _expression),
+            ),);
+        }
+      }
+      catch (e) {}
     }
-    t.reset();
-    _evaluateExpression();
-
+    else{
+      t.reset();
+    }
+  }
+  Future<void> _handleEqualsPressed() async {
+      _tryToDecrypt();
+      _evaluateExpression();
   }
   void _evaluateExpression() {
     try{
@@ -75,6 +78,21 @@ class _CalculatorScreenState extends State<CalculatorScreen> with TickerProvider
     setState(() {
       _expression = '';
       _result = null;
+    });
+  }
+  void _result2expression() {
+    if (_result != null)
+    {
+      _expression = _result;
+      _result = null;
+    }
+  }
+  void _handleBackspace() {
+    setState(() {
+      _result2expression();
+      if (_expression.isNotEmpty) {
+        _expression = _expression.substring(0, _expression.length - 1);
+      }
     });
   }
   @override
@@ -125,10 +143,19 @@ class _CalculatorScreenState extends State<CalculatorScreen> with TickerProvider
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
+              _buildButton('('), // Tasto Backspace
               _buildButton('0'),
+              _buildButton('.'),
+              _buildButton('+'),
+            ],
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              _buildButton(')'),
+              _buildButton('<'),
               _buildButton('C'),
               _buildButton('='),
-              _buildButton('+'),
             ],
           ),
         ],
