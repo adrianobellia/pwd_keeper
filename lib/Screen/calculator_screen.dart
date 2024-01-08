@@ -3,15 +3,16 @@ import 'package:math_expressions/math_expressions.dart';
 import 'package:pwd_keeper/Models/service_data.dart';
 import '../Utils/encryption.dart';
 import 'decrypted_data_screen.dart';
-
+import '../Utils/timer.dart';
 class CalculatorScreen extends StatefulWidget {
   const CalculatorScreen({super.key});
   @override
   _CalculatorScreenState createState() => _CalculatorScreenState();
 }
-class _CalculatorScreenState extends State<CalculatorScreen> {
+class _CalculatorScreenState extends State<CalculatorScreen> with TickerProviderStateMixin{
   String _expression = '';
   dynamic _result;
+  late Timer t;
   void _onButtonPressed(String text) {
     if (text == 'C') {
       _clearExpression();
@@ -24,21 +25,34 @@ class _CalculatorScreenState extends State<CalculatorScreen> {
       });
     }
   }
+  @override
+  void initState() {
+    super.initState();
+    t = Timer(vsync: this, durationInSeconds: 7);
+    t.start();
+  }
   Future<void> _tryToDecrypt() async {
-    List<ServiceData>? s = await EncryptionUtils.decryptFile(_expression);
-    if (s!=null){
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => DecryptedDataScreen(decryptedData: s, expression: _expression),
-        ),);
+    try{
+      List<ServiceData>? s = await EncryptionUtils.decryptFile(_expression);
+      if (s!=null){
+        t.dispose();
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => DecryptedDataScreen(decryptedData: s, expression: _expression),
+          ),);
+      }
     }
+    catch (e) {}
   }
   Future<void> _handleEqualsPressed() async {
-    try {
+    if (!t.started){
+      t.start();
       _tryToDecrypt();
-    } catch (e) {}
+    }
+    t.reset();
     _evaluateExpression();
+
   }
   void _evaluateExpression() {
     try{
