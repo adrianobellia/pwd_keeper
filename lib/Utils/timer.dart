@@ -5,12 +5,22 @@ class Timer {
   late int _elapsedSeconds;
   bool _started = false;
   final int _durationInSeconds;
+  DateTime? _lastSystemTime;
 
   Timer({required TickerProvider vsync, required int durationInSeconds})
       :
         _elapsedSeconds = 0,
         _durationInSeconds = durationInSeconds {
     _ticker = vsync.createTicker((elapsed) {
+      DateTime currentSystemTime = DateTime.now();
+      if (_lastSystemTime != null) {
+        Duration systemTimeDifference = currentSystemTime.difference(_lastSystemTime!);
+        if (systemTimeDifference.abs() > const Duration(milliseconds: 49)) {
+          reset();
+        }
+      }
+      _lastSystemTime = currentSystemTime;
+
       _elapsedSeconds = elapsed.inSeconds;
       if (_elapsedSeconds >= _durationInSeconds) {
         stop();
@@ -19,7 +29,7 @@ class Timer {
   }
 
   void start() {
-    if (!started) {
+    if (!_started) {
       _ticker.start();
       _started = true;
     }
