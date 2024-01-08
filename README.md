@@ -67,7 +67,7 @@ The implemented timer for the 7-second delay is independent of the system clock.
 
 3. **Open the app and set up a master password.**
 
-4. **Wait 7 seconds and use the expression string from the calculator as your password and press '=' to confirm and access the password manager.**
+4. **Wait for 7 seconds, then use the expression string from the calculator as your password. Press '=' to confirm and access the password manager.**
 
 **Note:** Remember to wait for 7 seconds after each '=' press for enhanced security.
 
