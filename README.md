@@ -22,6 +22,15 @@ Taking control of your information is an act of digital responsibility. Password
 
 This project is an appeal to digital education and security awareness. Our hope is that Password Keeper is not just a tool but also a means to spark conversations on how we can better protect ourselves and others in the digital world.
 
+## Development Environment
+
+This project is developed using:
+
+- Dart version: 3.2.3
+- Flutter version: 3.16.5
+
+It is recommended to use the specified versions for optimal compatibility.
+
 ## How to Customize Your Version
 
 Make your version unique by customizing key parameters in the `encryption.dart` file:
