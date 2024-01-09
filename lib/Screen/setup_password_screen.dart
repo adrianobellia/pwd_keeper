@@ -14,8 +14,19 @@ class _SetupPasswordScreenState extends State<SetupPasswordScreen> {
         _clearPassword();
       } else if (text == 'OK') {
         _onConfirmPressed();
-      } else {
+      }
+      else if (text == '<') {
+        _handleBackspace();
+      }
+      else {
         _onDigitPressed(text);
+      }
+    });
+  }
+  void _handleBackspace() {
+    setState(() {
+      if (_password.isNotEmpty) {
+        _password = _password.substring(0, _password.length - 1);
       }
     });
   }
@@ -58,16 +69,16 @@ class _SetupPasswordScreenState extends State<SetupPasswordScreen> {
           ),
           const SizedBox(height: 16.0),
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              _buildButton('1'),
-              _buildButton('2'),
-              _buildButton('3'),
+              _buildButton('7'),
+              _buildButton('8'),
+              _buildButton('9'),
               _buildButton('/'),
             ],
           ),
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               _buildButton('4'),
               _buildButton('5'),
@@ -76,19 +87,28 @@ class _SetupPasswordScreenState extends State<SetupPasswordScreen> {
             ],
           ),
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              _buildButton('7'),
-              _buildButton('8'),
-              _buildButton('9'),
+              _buildButton('1'),
+              _buildButton('2'),
+              _buildButton('3'),
               _buildButton('-'),
             ],
           ),
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
+              _buildButton('('), // Tasto Backspace
               _buildButton('0'),
+              _buildButton('.'),
               _buildButton('+'),
+            ],
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              _buildButton(')'),
+              _buildButton('<'),
               _buildButton('Del'),
               _buildButton('OK'),
             ],
